@@ -20,10 +20,14 @@ function CreateLine(Color,Transparency,Thickness,From,To)
 	line.BackgroundColor3 = Color
 	line.BorderSizePixel = 0
 	line.Transparency = Transparency
-	local length = (To - From).Magnitude
-	line.Size = UDim2.new(0, length, 0, Thickness)
-	line.Position = UDim2.new(0, From.X, 0, From.Y)
-	local angle = math.deg(math.atan2(To.Y - From.Y, To.X - From.X))
+	local delta = To - From
+	local length = delta.Magnitude
+	line.BackgroundColor3 = Color
+	line.BackgroundTransparency = Transparency
+	line.AnchorPoint = Vector2.new(0, 0.5)
+	line.Position = UDim2.fromOffset(From.X, From.Y)
+	line.Size = UDim2.fromOffset(length, Thickness)
+	local angle = math.deg(math.atan2(delta.Y, delta.X))
 	line.Rotation = angle
 	return line
 end
@@ -68,14 +72,16 @@ function CreateSquare(Color,Transparency,Thickness,Position,Size,Filled)
 	uiStroke.Parent = square
 	return square
 end
-function UpdateLine(Line,Color,Transparency,Thickness,From,To)
+function UpdateLine(Line, Color, Transparency, Thickness, From, To)
 	local line = Line
+	local delta = To - From
+	local length = delta.Magnitude
 	line.BackgroundColor3 = Color
-	line.Transparency = Transparency
-	local length = (To - From).Magnitude
-	line.Size = UDim2.new(0, length, 0, Thickness)
-	line.Position = UDim2.new(0, From.X, 0, From.Y)
-	local angle = math.deg(math.atan2(To.Y - From.Y, To.X - From.X))
+	line.BackgroundTransparency = Transparency
+	line.AnchorPoint = Vector2.new(0, 0.5)
+	line.Position = UDim2.fromOffset(From.X, From.Y)
+	line.Size = UDim2.fromOffset(length, Thickness)
+	local angle = math.deg(math.atan2(delta.Y, delta.X))
 	line.Rotation = angle
 end
 
