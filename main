@@ -1,2 +1,185 @@
-local code = {}
-return code
+local Drawing = {}
+
+local RunService = game:GetService("RunService")
+local IsStudio = RunService:IsStudio()
+local ParentGUi = IsStudio and game.Players.LocalPlayer:WaitForChild("PlayerGui") or game:GetService("CoreGui")
+local DrawingGui = ParentGUi:FindFirstChild("Drawing")
+
+if not DrawingGui then
+	DrawingGui = Instance.new("ScreenGui")
+	DrawingGui.Name = "Drawing"
+	DrawingGui.ResetOnSpawn = false
+	DrawingGui.IgnoreGuiInset = true
+	DrawingGui.Parent = ParentGUi
+end
+
+function CreateLine(Color,Transparency,Thickness,From,To)
+	local line = Instance.new("Frame")
+	line.Parent = DrawingGui
+	line.Name = tostring(#DrawingGui:GetChildren())
+	line.BackgroundColor3 = Color
+	line.BorderSizePixel = 0
+	line.Transparency = Transparency
+	local length = (To - From).Magnitude
+	line.Size = UDim2.new(0, length, 0, Thickness)
+	line.Position = UDim2.new(0, From.X, 0, From.Y)
+	local angle = math.deg(math.atan2(To.Y - From.Y, To.X - From.X))
+	line.Rotation = angle
+	return line
+end
+
+function CreateCircle(Color,Transparency,Thickness,Position,Radius,Filled)
+	local circle = Instance.new("Frame")
+	circle.Parent = DrawingGui
+	circle.Name = tostring(#DrawingGui:GetChildren())
+	circle.BackgroundColor3 = Color
+	circle.BackgroundTransparency = Filled and Transparency or 1
+	circle.BorderSizePixel = 0
+	circle.Size = UDim2.new(0, Radius, 0, Radius)
+	circle.Position = UDim2.new(0, Position.X, 0, Position.Y)
+	local uiCorner = Instance.new("UICorner")
+	uiCorner.CornerRadius = UDim.new(1,0)
+	uiCorner.Parent = circle
+	local uiStroke = Instance.new("UIStroke")
+	uiStroke.Thickness = Thickness
+	uiStroke.BorderStrokePosition = Enum.BorderStrokePosition.Center
+	uiStroke.Color = Color
+	uiStroke.LineJoinMode = Enum.LineJoinMode.Miter
+	uiStroke.Transparency = Filled and Transparency or 0
+	uiStroke.Parent = circle
+	return circle
+end
+
+function CreateSquare(Color,Transparency,Thickness,Position,Size,Filled)
+	local square = Instance.new("Frame")
+	square.Parent = DrawingGui
+	square.Name = tostring(#DrawingGui:GetChildren())
+	square.BackgroundColor3 = Color
+	square.BackgroundTransparency = Filled and Transparency or 1
+	square.BorderSizePixel = 0
+	square.Size = UDim2.new(0, Size.X, 0, Size.Y)
+	square.Position = UDim2.new(0, Position.X, 0, Position.Y)
+	local uiStroke = Instance.new("UIStroke")
+	uiStroke.Thickness = Thickness
+	uiStroke.BorderStrokePosition = Enum.BorderStrokePosition.Center
+	uiStroke.Color = Color
+	uiStroke.LineJoinMode = Enum.LineJoinMode.Miter
+	uiStroke.Transparency = Filled and Transparency or 0
+	uiStroke.Parent = square
+	return square
+end
+function UpdateLine(Line,Color,Transparency,Thickness,From,To)
+	local line = Line
+	line.BackgroundColor3 = Color
+	line.Transparency = Transparency
+	local length = (To - From).Magnitude
+	line.Size = UDim2.new(0, length, 0, Thickness)
+	line.Position = UDim2.new(0, From.X, 0, From.Y)
+	local angle = math.deg(math.atan2(To.Y - From.Y, To.X - From.X))
+	line.Rotation = angle
+end
+
+function UpdateCircle(Circle,Color,Transparency,Thickness,Position,Radius,Filled)
+	local circle = Circle
+	circle.BackgroundColor3 = Color
+	circle.BackgroundTransparency = Filled and Transparency or 1
+	circle.BorderSizePixel = 0
+	circle.Size = UDim2.new(0, Radius, 0, Radius)
+	circle.Position = UDim2.new(0, Position.X, 0, Position.Y)
+	local uiStroke = circle:FindFirstChildOfClass("UIStroke")
+	uiStroke.Thickness = Thickness
+	uiStroke.BorderStrokePosition = Enum.BorderStrokePosition.Center
+	uiStroke.Color = Color
+	uiStroke.Transparency = Filled and Transparency or 0
+end
+
+function UpdateSquare(Square,Color,Transparency,Thickness,Position,Size,Filled)
+	local square = Square
+	square.BackgroundColor3 = Color
+	square.BackgroundTransparency = Filled and Transparency or 1
+	square.Size = UDim2.new(0, Size.X, 0, Size.Y)
+	square.Position = UDim2.new(0, Position.X, 0, Position.Y)
+	local uiStroke = square:FindFirstChildOfClass("UIStroke")
+	uiStroke.Thickness = Thickness
+	uiStroke.Color = Color
+	uiStroke.Transparency = Filled and Transparency or 0
+end
+
+function new(type:string)
+	local data = {Visible = false}
+	local self = {}
+	if type:lower() == "line" then
+		data.Color = Color3.new(1,1,1)
+		data.Transparency = 0
+		data.Thickness = 1
+		data.From = Vector2.zero
+		data.To = Vector2.zero
+		data._Object = CreateLine(data.Color,(data.Visible and data.Transparency or 1),data.Thickness,data.From,data.To)
+		data._Type = "line"
+	elseif type:lower() == "circle" then
+		data.Color = Color3.new(1,1,1)
+		data.Transparency = 0
+		data.Radius = 0
+		data.Thickness = 1
+		data.Position = Vector2.zero
+		data.Filled = false
+		data._Object = CreateCircle(data.Color,(data.Visible and data.Transparency or 1),data.Thickness,data.Position,data.Radius,data.Filled)
+		data._Type = "circle"
+	elseif type:lower() == "square" then
+		data.Color = Color3.new(1,1,1)
+		data.Transparency = 0
+		data.Thickness = 1
+		data.Position = Vector2.zero
+		data.Size = Vector2.zero
+		data.Filled = false
+		data._Object = CreateSquare(data.Color,(data.Visible and data.Transparency or 1),data.Thickness,data.Position,data.Size,data.Filled)
+		data._Type = "square"
+	else
+		return
+	end
+	function self:Remove()
+		if data._Object then
+			data._Object:Destroy()
+		end
+	end
+	setmetatable(self, {
+		__index = data,
+		__newindex = function(_, key, value)
+			data[key] = value
+
+			if data._Type == "line" then
+				UpdateLine(data._Object,
+					data.Color,
+					(data.Visible and data.Transparency or 1),
+					data.Thickness,
+					data.From,
+					data.To
+				)
+			elseif data._Type == "circle" then
+				UpdateCircle(data._Object,
+					data.Color,
+					(data.Visible and data.Transparency or 1),
+					data.Thickness,
+					data.Position,
+					data.Radius,
+					data.Filled
+				)
+			elseif data._Type == "square" then
+				UpdateSquare(data._Object,
+					data.Color,
+					(data.Visible and data.Transparency or 1),
+					data.Thickness,
+					data.Position,
+					data.Size,
+					data.Filled
+				)
+			end
+		end
+	})
+	return self
+end
+
+Drawing.New = new
+Drawing.new = new
+
+return Drawing
