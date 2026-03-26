@@ -22,13 +22,11 @@ function CreateLine(Color,Transparency,Thickness,From,To)
 	line.Transparency = Transparency
 	local delta = To - From
 	local length = delta.Magnitude
-	line.BackgroundColor3 = Color
-	line.BackgroundTransparency = Transparency
-	line.AnchorPoint = Vector2.new(0, 0.5)
-	line.Position = UDim2.fromOffset(From.X, From.Y)
-	line.Size = UDim2.fromOffset(length, Thickness)
-	local angle = math.deg(math.atan2(delta.Y, delta.X))
-	line.Rotation = angle
+	local mid = (From + To) / 2
+	Line.AnchorPoint = Vector2.new(0.5, 0.5)
+	Line.Position = UDim2.fromOffset(mid.X, mid.Y)
+	Line.Size = UDim2.fromOffset(length, Thickness)
+	Line.Rotation = math.deg(math.atan2(delta.Y, delta.X))
 	return line
 end
 
@@ -73,16 +71,15 @@ function CreateSquare(Color,Transparency,Thickness,Position,Size,Filled)
 	return square
 end
 function UpdateLine(Line, Color, Transparency, Thickness, From, To)
-	local line = Line
 	local delta = To - From
 	local length = delta.Magnitude
-	line.BackgroundColor3 = Color
-	line.BackgroundTransparency = Transparency
-	line.AnchorPoint = Vector2.new(0, 0.5)
-	line.Position = UDim2.fromOffset(From.X, From.Y)
-	line.Size = UDim2.fromOffset(length, Thickness)
-	local angle = math.deg(math.atan2(delta.Y, delta.X))
-	line.Rotation = angle
+	local mid = (From + To) / 2
+	Line.BackgroundColor3 = Color
+	Line.BackgroundTransparency = Transparency
+	Line.AnchorPoint = Vector2.new(0.5, 0.5)
+	Line.Position = UDim2.fromOffset(mid.X, mid.Y)
+	Line.Size = UDim2.fromOffset(length, Thickness)
+	Line.Rotation = math.deg(math.atan2(delta.Y, delta.X))
 end
 
 function UpdateCircle(Circle,Color,Transparency,Thickness,Position,Radius,Filled)
